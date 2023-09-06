@@ -5,33 +5,40 @@ const privileges = import ('../../privileges');
 const meta = import ('../../meta'); */
 
 
-import * as db from '../../database';
+/* import * as db from '../../database';
 import * as user from '../../user';
 import * as posts from '../../posts';
 import * as privileges from '../../privileges';
-import * as meta from '../../meta';
+import * as meta from '../../meta'; */
+
+import db = require('../../database');
+import user = require('../../user');
+import posts = require('../../posts');
+import privileges = require('../../privileges');
+import meta = require('../../meta');
+
 
 type dataType = {
     pid: number,
     cid: number
-}
+};
 
 type socketType = {
     uid: number
-}
+};
 
 type votersDataType = {
     upvoteCount: number,
     downvoteCount: number,
     showDownvotes: boolean,
-    upvoters: any,
-    downvoters: any
-}
+    upvoters: string[],
+    downvoters: string[]
+};
 
 type SocketPosts = {
     getVoters: (socket: socketType, data: dataType) => Promise<votersDataType>,
-    getUpvoters: any
-}
+    getUpvoters: (socket: socketType, pids: number[]) => Promise<{ otherCount: number; usernames: string[]; }[]>
+};
 
 export default function (SocketPosts: SocketPosts) { // add return type
     SocketPosts.getVoters = async function (socket: socketType, data: dataType): Promise<votersDataType> {
@@ -58,13 +65,13 @@ export default function (SocketPosts: SocketPosts) { // add return type
             showDownvotes ? db.getSetMembers(`pid:${data.pid}:downvote`) as number[] : [],
         ]);
 
-        const [upvoters, downvoters]: [any[], any[]] = await Promise.all([
+        const [upvoters, downvoters]: [string[], string[]] = await Promise.all([
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            user.getUsersFields(upvoteUids, ['username', 'userslug', 'picture']) as any[],
+            user.getUsersFields(upvoteUids, ['username', 'userslug', 'picture']) as string[],
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            user.getUsersFields(downvoteUids, ['username', 'userslug', 'picture'])as any[],
+            user.getUsersFields(downvoteUids, ['username', 'userslug', 'picture'])as string[],
         ]);
 
         const upvoteCount: number = upvoters.length;
@@ -79,13 +86,13 @@ export default function (SocketPosts: SocketPosts) { // add return type
         };
     };
 
-    SocketPosts.getUpvoters = async function (socket, pids: number[]) {
+    SocketPosts.getUpvoters = async function (socket: socketType, pids: number[]) {
         if (!Array.isArray(pids)) {
             throw new Error('[[error:invalid-data]]');
         }
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        const data: any[] = await posts.getUpvotedUidsByPids(pids) as any[];
+        const data: number[][] = await posts.getUpvotedUidsByPids(pids) as number[][];
         if (!data.length) {
             return [];
         }
@@ -104,4 +111,4 @@ export default function (SocketPosts: SocketPosts) { // add return type
         }));
         return result;
     };
-}
+};
