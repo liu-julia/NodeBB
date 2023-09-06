@@ -5,11 +5,11 @@ const privileges = import ('../../privileges');
 const meta = import ('../../meta'); */
 
 
-import db from '../../database';
-import user from '../../user';
-import posts from '../../posts';
-import privileges from '../../privileges';
-import meta from '../../meta';
+import * as db from '../../database';
+import * as user from '../../user';
+import * as posts from '../../posts';
+import * as privileges from '../../privileges';
+import * as meta from '../../meta';
 
 type dataType = {
     pid: number,
@@ -58,17 +58,17 @@ export default function (SocketPosts: SocketPosts) { // add return type
             showDownvotes ? db.getSetMembers(`pid:${data.pid}:downvote`) as number[] : [],
         ]);
 
-        const [upvoters, downvoters] = await Promise.all([
+        const [upvoters, downvoters]: [any[], any[]] = await Promise.all([
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            user.getUsersFields(upvoteUids, ['username', 'userslug', 'picture']),
+            user.getUsersFields(upvoteUids, ['username', 'userslug', 'picture']) as any[],
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            user.getUsersFields(downvoteUids, ['username', 'userslug', 'picture']),
+            user.getUsersFields(downvoteUids, ['username', 'userslug', 'picture'])as any[],
         ]);
 
-        const upvoteCount: number = upvoters.length as number;
-        const downvoteCount: number = downvoters.length as number;
+        const upvoteCount: number = upvoters.length;
+        const downvoteCount: number = downvoters.length;
 
         return {
             upvoteCount: upvoteCount,
@@ -85,7 +85,7 @@ export default function (SocketPosts: SocketPosts) { // add return type
         }
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        const data: any[] = await posts.getUpvotedUidsByPids(pids);
+        const data: any[] = await posts.getUpvotedUidsByPids(pids) as any[];
         if (!data.length) {
             return [];
         }
@@ -96,7 +96,7 @@ export default function (SocketPosts: SocketPosts) { // add return type
                 otherCount = uids.length - 5;
                 uids = uids.slice(0, 5);
             }
-            const usernames: string[] = await user.getUsernamesByUids(uids);
+            const usernames: string[] = await user.getUsernamesByUids(uids) as string[];
             return {
                 otherCount: otherCount,
                 usernames: usernames,

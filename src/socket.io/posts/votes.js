@@ -4,6 +4,29 @@ const user = import( '../../user');
 const posts = import ('../../posts');
 const privileges = import ('../../privileges');
 const meta = import ('../../meta'); */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,15 +36,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const database_1 = __importDefault(require("../../database"));
-const user_1 = __importDefault(require("../../user"));
-const posts_1 = __importDefault(require("../../posts"));
-const privileges_1 = __importDefault(require("../../privileges"));
-const meta_1 = __importDefault(require("../../meta"));
+const db = __importStar(require("../../database"));
+const user = __importStar(require("../../user"));
+const posts = __importStar(require("../../posts"));
+const privileges = __importStar(require("../../privileges"));
+const meta = __importStar(require("../../meta"));
 function default_1(SocketPosts) {
     SocketPosts.getVoters = function (socket, data) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -29,32 +49,32 @@ function default_1(SocketPosts) {
                 throw new Error('[[error:invalid-data]]');
             } // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            const showDownvotes = !meta_1.default.config['downvote:disabled'];
+            const showDownvotes = !meta.config['downvote:disabled'];
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            const canSeeVotes = meta_1.default.config.votesArePublic ||
+            const canSeeVotes = meta.config.votesArePublic ||
                 (
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                yield privileges_1.default.categories.isAdminOrMod(data.cid, socket.uid));
+                yield privileges.categories.isAdminOrMod(data.cid, socket.uid));
             if (!canSeeVotes) {
                 throw new Error('[[error:no-privileges]]');
             }
             const [upvoteUids, downvoteUids] = yield Promise.all([
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                database_1.default.getSetMembers(`pid:${data.pid}:upvote`),
+                db.getSetMembers(`pid:${data.pid}:upvote`),
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                showDownvotes ? database_1.default.getSetMembers(`pid:${data.pid}:downvote`) : [],
+                showDownvotes ? db.getSetMembers(`pid:${data.pid}:downvote`) : [],
             ]);
             const [upvoters, downvoters] = yield Promise.all([
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                user_1.default.getUsersFields(upvoteUids, ['username', 'userslug', 'picture']),
+                user.getUsersFields(upvoteUids, ['username', 'userslug', 'picture']),
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                user_1.default.getUsersFields(downvoteUids, ['username', 'userslug', 'picture']),
+                user.getUsersFields(downvoteUids, ['username', 'userslug', 'picture']),
             ]);
             const upvoteCount = upvoters.length;
             const downvoteCount = downvoters.length;
@@ -74,7 +94,7 @@ function default_1(SocketPosts) {
             }
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            const data = yield posts_1.default.getUpvotedUidsByPids(pids);
+            const data = yield posts.getUpvotedUidsByPids(pids);
             if (!data.length) {
                 return [];
             }
@@ -84,7 +104,7 @@ function default_1(SocketPosts) {
                     otherCount = uids.length - 5;
                     uids = uids.slice(0, 5);
                 }
-                const usernames = yield user_1.default.getUsernamesByUids(uids);
+                const usernames = yield user.getUsernamesByUids(uids);
                 return {
                     otherCount: otherCount,
                     usernames: usernames,
