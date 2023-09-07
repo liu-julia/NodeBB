@@ -11,21 +11,27 @@ import * as posts from '../../posts';
 import * as privileges from '../../privileges';
 import * as meta from '../../meta'; */
 
-import db = require('../../database');
+import db from '../../database';
+import user from '../../user';
+import posts from '../../posts';
+import privileges from '../../privileges';
+import meta from '../../meta';
+
+/* import db = require('../../database');
 import user = require('../../user');
 import posts = require('../../posts');
 import privileges = require('../../privileges');
-import meta = require('../../meta');
+import meta = require('../../meta'); */
 
 
 type dataType = {
     pid: number,
     cid: number
-};
+}
 
 type socketType = {
     uid: number
-};
+}
 
 type votersDataType = {
     upvoteCount: number,
@@ -33,14 +39,14 @@ type votersDataType = {
     showDownvotes: boolean,
     upvoters: string[],
     downvoters: string[]
-};
+}
 
-type SocketPosts = {
+type SocketPostsType= {
     getVoters: (socket: socketType, data: dataType) => Promise<votersDataType>,
     getUpvoters: (socket: socketType, pids: number[]) => Promise<{ otherCount: number; usernames: string[]; }[]>
-};
+}
 
-export default function (SocketPosts: SocketPosts) { // add return type
+export = function (SocketPosts: SocketPostsType) { // add return type
     SocketPosts.getVoters = async function (socket: socketType, data: dataType): Promise<votersDataType> {
         if (!data || !data.pid || !data.cid) {
             throw new Error('[[error:invalid-data]]');
@@ -111,4 +117,4 @@ export default function (SocketPosts: SocketPosts) { // add return type
         }));
         return result;
     };
-};
+}

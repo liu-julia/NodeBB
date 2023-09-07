@@ -13,50 +13,52 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 /* import * as db from '../../database';
 import * as user from '../../user';
 import * as posts from '../../posts';
 import * as privileges from '../../privileges';
 import * as meta from '../../meta'; */
-const db = require("../../database");
-const user = require("../../user");
-const posts = require("../../posts");
-const privileges = require("../../privileges");
-const meta = require("../../meta");
-function default_1(SocketPosts) {
+const database_1 = __importDefault(require("../../database"));
+const user_1 = __importDefault(require("../../user"));
+const posts_1 = __importDefault(require("../../posts"));
+const privileges_1 = __importDefault(require("../../privileges"));
+const meta_1 = __importDefault(require("../../meta"));
+module.exports = function (SocketPosts) {
     SocketPosts.getVoters = function (socket, data) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!data || !data.pid || !data.cid) {
                 throw new Error('[[error:invalid-data]]');
             } // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            const showDownvotes = !meta.config['downvote:disabled'];
+            const showDownvotes = !meta_1.default.config['downvote:disabled'];
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            const canSeeVotes = meta.config.votesArePublic ||
+            const canSeeVotes = meta_1.default.config.votesArePublic ||
                 (
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                yield privileges.categories.isAdminOrMod(data.cid, socket.uid));
+                yield privileges_1.default.categories.isAdminOrMod(data.cid, socket.uid));
             if (!canSeeVotes) {
                 throw new Error('[[error:no-privileges]]');
             }
             const [upvoteUids, downvoteUids] = yield Promise.all([
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                db.getSetMembers(`pid:${data.pid}:upvote`),
+                database_1.default.getSetMembers(`pid:${data.pid}:upvote`),
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                showDownvotes ? db.getSetMembers(`pid:${data.pid}:downvote`) : [],
+                showDownvotes ? database_1.default.getSetMembers(`pid:${data.pid}:downvote`) : [],
             ]);
             const [upvoters, downvoters] = yield Promise.all([
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                user.getUsersFields(upvoteUids, ['username', 'userslug', 'picture']),
+                user_1.default.getUsersFields(upvoteUids, ['username', 'userslug', 'picture']),
                 // The next line calls a function in a module that has not been updated to TS yet
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                user.getUsersFields(downvoteUids, ['username', 'userslug', 'picture']),
+                user_1.default.getUsersFields(downvoteUids, ['username', 'userslug', 'picture']),
             ]);
             const upvoteCount = upvoters.length;
             const downvoteCount = downvoters.length;
@@ -76,7 +78,7 @@ function default_1(SocketPosts) {
             }
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            const data = yield posts.getUpvotedUidsByPids(pids);
+            const data = yield posts_1.default.getUpvotedUidsByPids(pids);
             if (!data.length) {
                 return [];
             }
@@ -86,7 +88,7 @@ function default_1(SocketPosts) {
                     otherCount = uids.length - 5;
                     uids = uids.slice(0, 5);
                 }
-                const usernames = yield user.getUsernamesByUids(uids);
+                const usernames = yield user_1.default.getUsernamesByUids(uids);
                 return {
                     otherCount: otherCount,
                     usernames: usernames,
@@ -95,6 +97,4 @@ function default_1(SocketPosts) {
             return result;
         });
     };
-}
-exports.default = default_1;
-;
+};
