@@ -23,15 +23,19 @@ import posts = require('../../posts');
 import privileges = require('../../privileges');
 import meta = require('../../meta'); */
 
+// haha, i tried a bunch of stuff to make this work...
+
 
 type dataType = {
     pid: number,
     cid: number
 }
+// allows explicit typing of "data" variable
 
 type socketType = {
     uid: number
 }
+// allows explicit typing of "socket" variable
 
 type votersDataType = {
     upvoteCount: number,
@@ -40,11 +44,14 @@ type votersDataType = {
     upvoters: string[],
     downvoters: string[]
 }
+// allows explicit typing of "getVoters" output
 
 type SocketPostsType= {
     getVoters: (socket: socketType, data: dataType) => Promise<votersDataType>,
     getUpvoters: (socket: socketType, pids: number[]) => Promise<{ otherCount: number; usernames: string[]; }[]>
 }
+
+// allows explicit typing of default export function
 
 export = function (SocketPosts: SocketPostsType) { // add return type
     SocketPosts.getVoters = async function (socket: socketType, data: dataType): Promise<votersDataType> {
@@ -83,6 +90,7 @@ export = function (SocketPosts: SocketPostsType) { // add return type
 
         const upvoteCount: number = upvoters.length;
         const downvoteCount: number = downvoters.length;
+        // could have been unnecessary/achieved through "as number" but it works
 
         return {
             upvoteCount: upvoteCount,
