@@ -46,11 +46,12 @@ type SocketPostsType= {
     getUpvoters: (socket: socketType, pids: number[]) => Promise<{ otherCount: number; usernames: string[]; }[]>
 }
 
-export = function (SocketPosts: SocketPostsType) { // add return type
+export default function (SocketPosts: SocketPostsType) { // add return type
     SocketPosts.getVoters = async function (socket: socketType, data: dataType): Promise<votersDataType> {
         if (!data || !data.pid || !data.cid) {
             throw new Error('[[error:invalid-data]]');
-        }// The next line calls a function in a module that has not been updated to TS yet
+        }
+        // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         const showDownvotes = !meta.config['downvote:disabled'];
         // The next line calls a function in a module that has not been updated to TS yet
