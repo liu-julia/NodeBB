@@ -46,7 +46,7 @@ type SocketPostsType= {
     getUpvoters: (socket: socketType, pids: number[]) => Promise<{ otherCount: number; usernames: string[]; }[]>
 }
 
-export default function (SocketPosts: SocketPostsType) { // add return type
+export = function (SocketPosts: SocketPostsType) { // add return type
     SocketPosts.getVoters = async function (socket: socketType, data: dataType): Promise<votersDataType> {
         if (!data || !data.pid || !data.cid) {
             throw new Error('[[error:invalid-data]]');

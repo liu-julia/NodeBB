@@ -7,7 +7,6 @@ const meta = import ('../../meta'); */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 /* import * as db from '../../database';
 import * as user from '../../user';
 import * as posts from '../../posts';
@@ -18,7 +17,7 @@ const user_1 = __importDefault(require("../../user"));
 const posts_1 = __importDefault(require("../../posts"));
 const privileges_1 = __importDefault(require("../../privileges"));
 const meta_1 = __importDefault(require("../../meta"));
-function default_1(SocketPosts) {
+module.exports = function (SocketPosts) {
     SocketPosts.getVoters = async function (socket, data) {
         if (!data || !data.pid || !data.cid) {
             throw new Error('[[error:invalid-data]]');
@@ -85,5 +84,4 @@ function default_1(SocketPosts) {
         }));
         return result;
     };
-}
-exports.default = default_1;
+};
